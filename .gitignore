@@ -1,0 +1,7 @@
+gcp-oauth.keys.json
+*.keys.json
+.mcp.json
+.claude/settings.local.json
+docs/
+logs/
+knowledge/

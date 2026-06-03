@@ -26,39 +26,34 @@ git clone https://github.com/oshmizumoto/claude-daily-workflow.git
 cd claude-daily-workflow
 ```
 
-### 2. プレースホルダーを自分の環境に置き換える
-
-以下の値を `CLAUDE.md` および `.claude/` 配下で全置換する。
-
-| プレースホルダー | 置き換える値 |
-|----------------|------------|
-| `YOUR_NOTION_TASK_DB_ID` | あなたのタスクDB（Notion）のID |
-| `YOUR_NOTION_PARENT_PAGE_ID` | 日次ページの親ページ（Notion）のID |
-| `YOUR_NOTION_SPEC_PAGE_ID` | 仕様書・定期ルールを書いたページ（Notion）のID |
-| `YOUR_SLACK_CHANNEL_ID` | 通知先Slackチャンネル ID |
-| `#your-workflow-channel` | 表示用チャンネル名 |
-
-`CLAUDE.md` の「基本コンテキスト」セクション（ユーザー名・組織）も書き換える。
-
-例（bash, macOS/Linux）:
+### 2. Claude Codeを起動してセットアップSkillを実行
 
 ```bash
-NOTION_TASK_DB="<your-id>"
-NOTION_PARENT="<your-id>"
-NOTION_SPEC="<your-id>"
-SLACK_CH="<your-id>"
-SLACK_NAME="#your-channel"
-
-grep -rl "YOUR_NOTION_TASK_DB_ID" . | xargs sed -i "" "s/YOUR_NOTION_TASK_DB_ID/$NOTION_TASK_DB/g"
-grep -rl "YOUR_NOTION_PARENT_PAGE_ID" . | xargs sed -i "" "s/YOUR_NOTION_PARENT_PAGE_ID/$NOTION_PARENT/g"
-grep -rl "YOUR_NOTION_SPEC_PAGE_ID" . | xargs sed -i "" "s/YOUR_NOTION_SPEC_PAGE_ID/$NOTION_SPEC/g"
-grep -rl "YOUR_SLACK_CHANNEL_ID" . | xargs sed -i "" "s/YOUR_SLACK_CHANNEL_ID/$SLACK_CH/g"
-grep -rl "#your-workflow-channel" . | xargs sed -i "" "s|#your-workflow-channel|$SLACK_NAME|g"
+claude
 ```
+
+起動後、以下のいずれかを送信してセットアップSkillを呼び出す：
+
+- 「セットアップして」
+- 「初期設定」
+- 「configure」
+
+`setup` Skill が対話形式で以下を順次収集し、リポジトリ内のプレースホルダーを置換する：
+
+| 収集する値 | 取得方法 |
+|----------|---------|
+| NotionタスクDB ID | NotionデータベースURLから抽出（32桁） |
+| Notion親ページID | 日次ログを作成する親ページのURL |
+| Notion仕様書ページID | 定期ルール記載ページ（任意） |
+| SlackチャンネルID | Slackチャンネル詳細の「チャンネルID」（Cで始まる） |
+| Slackチャンネル表示名 | `#xxx` 形式 |
+| ユーザー名・所属 | CLAUDE.md に記載するアイデンティティ |
+
+置換完了後、Notion・Slack接続の検証を自動実行し、結果を報告する。
 
 ### 3. MCP接続を整える
 
-Claude Code（CLI）で以下のMCPサーバーが利用できる状態にする:
+Claude Code（CLI）で以下のMCPサーバーが利用できる状態にする：
 
 - Notion（`mcp__claude_ai_Notion__*`）
 - Slack（`mcp__claude_ai_Slack__*`）
@@ -68,17 +63,11 @@ Claude Code（CLI）で以下のMCPサーバーが利用できる状態にする
 
 `.claude/settings.json` で許可済み。CLIから claude.ai のビルトイン統合を有効化すること。
 
-### 4. ローカルログ・docs用ディレクトリを作成
+### 4. 動かす
 
-`logs/`, `docs/` は `.gitignore` 済み。実行時にローカル生成される。
-
-### 5. 動かす
-
-```bash
-claude
 ```
-
-起動後、`/work-start` を実行。
+/work-start
+```
 
 ## ディレクトリ構成
 
@@ -97,6 +86,7 @@ claude
 │   ├── brainstorm.md
 │   └── work-end.md
 ├── skills/          # on-demand参照されるスキル
+│   ├── setup/       # 初回セットアップ（このリポジトリ固有）
 │   ├── gmail-check/
 │   ├── notion-ops/
 │   ├── slack-notify/
@@ -110,6 +100,24 @@ CLAUDE.md            # プロジェクト全体の常時読み込みコンテキ
 - **クライアント別ルール**: `.claude/skills/gmail-check/SKILL.md` の「クライアント別特別ルール」セクションを編集
 - **Slack注目トピック**: `.claude/agents/agent-slack-scan.md` の検索キーワード・重要度判定を編集
 - **デイリーページテンプレート**: `.claude/skills/notion-ops/assets/daily_page_template.md` を編集
+
+## 手動セットアップ（参考）
+
+Skillを使わず手動でプレースホルダーを置換する場合の sed スクリプト例：
+
+```bash
+NOTION_TASK_DB="<your-id>"
+NOTION_PARENT="<your-id>"
+NOTION_SPEC="<your-id>"
+SLACK_CH="<your-id>"
+SLACK_NAME="#your-channel"
+
+grep -rl "YOUR_NOTION_TASK_DB_ID" . | xargs sed -i "" "s/YOUR_NOTION_TASK_DB_ID/$NOTION_TASK_DB/g"
+grep -rl "YOUR_NOTION_PARENT_PAGE_ID" . | xargs sed -i "" "s/YOUR_NOTION_PARENT_PAGE_ID/$NOTION_PARENT/g"
+grep -rl "YOUR_NOTION_SPEC_PAGE_ID" . | xargs sed -i "" "s/YOUR_NOTION_SPEC_PAGE_ID/$NOTION_SPEC/g"
+grep -rl "YOUR_SLACK_CHANNEL_ID" . | xargs sed -i "" "s/YOUR_SLACK_CHANNEL_ID/$SLACK_CH/g"
+grep -rl "#your-workflow-channel" . | xargs sed -i "" "s|#your-workflow-channel|$SLACK_NAME|g"
+```
 
 ## ライセンス
 

@@ -27,6 +27,7 @@ slack_channel:      "YOUR_SLACK_CHANNEL_ID"  # #your-workflow-channel
 
 | コマンド | 説明 |
 |---------|------|
+| `/cloud-prep` | 早朝事前準備（スケジュール実行用 / Notion・Linear・Slack・仕様書を当日ページに書き出し） |
 | `/work-start` | 朝ワークフロー（情報収集→ローカルログ作成→Slack通知） |
 | `/brainstorm` | 壁打ちセッション（タスク棚卸し→Notion即時反映→壁打ち） |
 | `/work-end`   | クローズ処理（議事メモ・新規タスク追加・Notion同期・Slack報告） |

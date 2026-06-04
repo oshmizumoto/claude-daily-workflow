@@ -148,8 +148,25 @@ YOUR_SLACK_CHANNEL_ID → <収集したID>
 
 次のステップ:
 - `/work-start` で朝ワークフローを試してください
+- `/cloud-prep` を `/schedule` 登録すると朝の起動が早くなります（STEP6参照）
 - 仕様書ページIDが未設定の場合、agent-spec.md と CLAUDE.md を後で手動更新してください
 ```
+
+---
+
+## STEP6｜早朝事前準備のスケジュール登録（任意）
+
+`AskUserQuestion` で「`/cloud-prep` を平日早朝にスケジュール登録しますか？」と確認する。
+
+- **登録する** → `schedule` Skill を呼び出し、以下の内容で登録：
+  - name: `cloud-prep`
+  - cron: `0 6 * * 1-5`（平日 6:00 JST、ユーザー要望があれば変更）
+  - timezone: `Asia/Tokyo`
+  - prompt: `/cloud-prep`
+- **後で登録する** → 「README の『スケジュール登録』を参照してください」と案内
+- **使わない** → そのまま終了。`/work-start` はクラウドページ非存在時のフルモードで動作する
+
+スケジュール登録が成功したら、`/schedule list` 相当の情報を表示して確認してもらう。
 
 ---
 

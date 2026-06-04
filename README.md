@@ -7,7 +7,8 @@ Claude Code（CLI）で運用する日次ワークフローのテンプレート
 
 | コマンド | 用途 |
 |---------|------|
-| `/work-start` | カレンダー・タスク・メール・Slackを並列収集し、当日ログを生成、Slackで業務開始通知 |
+| `/cloud-prep` | 早朝バッチ。Notion・Linear・Slack・仕様書を収集して当日のNotion日次ページを事前生成（`/schedule` で平日早朝に自動実行） |
+| `/work-start` | カレンダー・Gmailを補完しつつ当日ログを生成、Slackで業務開始通知 |
 | `/brainstorm` | タスク棚卸し（Notion即時反映）→ 壁打ち。トピック区切りごとに当日ログへ追記 |
 | `/work-end` | ローカルログをNotionに同期、アクションアイテムをタスクDBへ追加、Slackでクローズ報告 |
 
@@ -16,6 +17,7 @@ Claude Code（CLI）で運用する日次ワークフローのテンプレート
 - **セッション中はローカル完結**（`logs/YYYYMMDD.md` に読み書き）
 - **クローズ時に一括でNotion同期**（API往復を最小化）
 - **SubAgent並列実行**（朝の情報収集を6つのagent-*.mdで並列化）
+- **早朝事前準備をスケジュール化**（`/cloud-prep` を `/schedule` 登録、起動時の体感速度を上げる）
 
 ## セットアップ
 
@@ -68,6 +70,20 @@ Claude Code（CLI）で以下のMCPサーバーが利用できる状態にする
 ```
 /work-start
 ```
+
+### 5. （任意）早朝事前準備をスケジュール登録
+
+`/cloud-prep` を `/schedule` Skill で平日早朝に登録すると、`/work-start` 起動時に既存のNotion日次ページを再利用でき、待ち時間が短くなります。
+
+```
+/schedule create
+- name: cloud-prep
+- cron: 0 6 * * 1-5      # 平日 6:00（JST想定）
+- timezone: Asia/Tokyo
+- prompt: /cloud-prep
+```
+
+スケジュール内容を変更する場合は `/schedule list` で現状を確認し、必要に応じて更新してください。
 
 ## ディレクトリ構成
 
